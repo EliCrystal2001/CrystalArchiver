@@ -15,5 +15,6 @@ PSM Yaroze is the first serious PSM archival effort and take preservation of his
 We strongly consider you to contribute to PSM Yaroze, there is no use hoarding these games and by doing so you are hurting everyone by endangering history. This information will be lost forever if your Vita somehow breaks. It will be your fault.
 
 ![app](https://user-images.githubusercontent.com/92234191/139364571-b2ed2fe9-d740-4c02-89af-a3fc207aea02.png)
+![crystal_arch_1](https://user-images.githubusercontent.com/92234191/139365255-7dd49208-3475-427f-b46a-3497a3f3854d.jpg)
 
 
