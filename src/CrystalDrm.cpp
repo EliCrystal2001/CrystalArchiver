@@ -5,6 +5,7 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
+#include <cstring>
 #include <cstdio>
 #include "CrystalDrm.hpp"
 #include "CrystalIo.hpp"
@@ -36,17 +37,17 @@ namespace EliCrystal {
 	/*
 	*	Method to read a License File
 	*/
-	CrystalPsmLicense CrystalDrm::LoadLicense(string titleid){
-		CrystalPsmLicense PsmLicense;
-		memset(&PsmLicense, 0x00, sizeof(CrystalPsmLicense));
+	ScePsmDrmLicense CrystalDrm::LoadLicense(string titleid){
+		ScePsmDrmLicense PsmLicense;
+		memset(&PsmLicense, 0x00, sizeof(ScePsmDrmLicense));
 		
 		string RifPath = "ux0:/psm/"+titleid+"/RO/License/"+this->RifName;
 		sceClibPrintf("Opening RIF: %s\n", RifPath.c_str());
 		
 		CrystalFileData* Data = CrystalIo::ReadFile(RifPath);
 		
-		if(Data->FileSize >= sizeof(CrystalPsmLicense)){
-			memcpy(&PsmLicense, Data->FileData, sizeof(CrystalPsmLicense));
+		if(Data->FileSize >= sizeof(ScePsmDrmLicense)){
+			memcpy(&PsmLicense, Data->FileData, sizeof(ScePsmDrmLicense));
 		}
 		else{
 			sceClibPrintf("Failed to load rif: %s\n", RifPath.c_str());
@@ -58,21 +59,25 @@ namespace EliCrystal {
 	/*
 	*	Method to decrypt PSM License Files
 	*/
-	CrystalPsmLicense CrystalDrm::DecryptLicense(CrystalPsmLicense license){
-		CrystalPsmLicense PsmLicense;
-		memset(&PsmLicense, 0x00, sizeof(CrystalPsmLicense));
+	ScePsmDrmLicense CrystalDrm::DecryptLicense(ScePsmDrmLicense license){
+		ScePsmDrmLicense PsmLicense;
+		memset(&PsmLicense, 0x00, sizeof(ScePsmDrmLicense));
 		
-		char KeyData[0x200];
-		memset(KeyData, 0x00, sizeof(KeyData));
+		ScePsmDrmKeySet KeySet;
+		ScePsmDrmExpireTime ExpireTime;
+		int Flags = 0;
 		
-		int Error = scePsmDrmGetRifKey((char*)&license, KeyData, 0);
+		memset(&ExpireTime, 0x00, sizeof(ScePsmDrmExpireTime));
+		memset(&KeySet, 0x00, sizeof(ScePsmDrmKeySet));
+		
+		int Error = scePsmDrmGetRifKey(&license, &KeySet, &Flags, &ExpireTime);
 		
 		if(Error >= 0){
-			PsmLicense.aid = FakeAid;
+			PsmLicense.account_id = FakeAid;
 			PsmLicense.unk1 = __builtin_bswap32(1);
 			
 			memcpy(PsmLicense.content_id, license.content_id, 0x30);
-			memcpy(PsmLicense.key, KeyData, sizeof(KeyData));
+			memcpy(&PsmLicense.keyset, &KeySet, sizeof(KeySet));
 			
 			sceClibPrintf("Decrypted: %s\n", PsmLicense.content_id);
 		}

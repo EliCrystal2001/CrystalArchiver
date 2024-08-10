@@ -67,8 +67,8 @@ namespace EliCrystal {
 	*	Handles Gui Updates (controls, etc) 
 	*/
 	void CrystalGui::Update(){
-		CrystalPsmLicense PsmRif;
-		CrystalPsmLicense PsmRifDec;
+		ScePsmDrmLicense PsmRif;
+		ScePsmDrmLicense PsmRifDec;
 		CrystalFileData* Data;		
 		SceCtrlData Pad;
 		switch(this->GuiState){
@@ -77,8 +77,8 @@ namespace EliCrystal {
 				PsmRif = Drm->LoadLicense(this->CurrentTitleid);
 				PsmRifDec = Drm->DecryptLicense(PsmRif);
 				
-				if(PsmRifDec.aid != 0){
-					Data = new CrystalFileData(sizeof(CrystalPsmLicense), (char*)&PsmRifDec);
+				if(PsmRifDec.account_id != 0){
+					Data = new CrystalFileData(sizeof(ScePsmDrmLicense), (char*)&PsmRifDec);
 				
 					CrystalHttp::UploadData("http://psm.elicrystal.ca/submit_rif.php?keep="+to_string(this->UploadLicenses), Data);
 					this->CurrentContentId.assign(PsmRifDec.content_id);

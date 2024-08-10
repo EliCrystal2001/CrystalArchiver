@@ -2,6 +2,7 @@
 *	 Written by Eli Crystal
 */
 
+#include <cstring>
 #include "CrystalIo.hpp"
 
 /*
